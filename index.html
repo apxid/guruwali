@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Wali Siswa</title>
+<meta name="theme-color" content="#003b95">
+<style>
+:root{--primary:#003b95;--accent:#ffc107;--bg:#f3f4f6;--card:#fff;--text:#172033;--muted:#6b7280;--danger:#dc2626;--success:#16a34a;--border:#e5e7eb}
+*{box-sizing:border-box}body{margin:0;font-family:Poppins,Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}
+.hidden{display:none!important}.app{min-height:100vh}.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#003b95,#0b5ed7)}
+.login-card{width:min(440px,100%);background:rgba(255,255,255,.96);border-radius:24px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.logo{width:64px;height:64px;border-radius:18px;background:var(--primary);color:white;display:grid;place-items:center;font-size:28px;margin-bottom:16px}
+h1,h2,h3{margin:0 0 10px}.muted{color:var(--muted);font-size:13px}.tabs{display:flex;background:#eef2f7;padding:4px;border-radius:12px;margin:20px 0}.tabs button{flex:1;padding:10px;border-radius:9px;background:transparent}.tabs button.active{background:#fff;font-weight:700;box-shadow:0 2px 8px #00000012}
+.field{margin:13px 0}.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:10px;outline:none;background:#fff}.field textarea{min-height:100px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary)}
+.btn{padding:11px 16px;border-radius:10px;font-weight:700}.btn-primary{background:var(--primary);color:#fff}.btn-light{background:#eef2f7;color:var(--text)}.btn-danger{background:#fee2e2;color:#991b1b}.btn-success{background:#dcfce7;color:#166534}
+.header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 18px}.brand{font-weight:800;color:var(--primary)}.layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px)}.sidebar{background:#fff;border-right:1px solid var(--border);padding:14px;position:sticky;top:64px;height:calc(100vh - 64px)}.nav button{width:100%;text-align:left;padding:11px 12px;background:transparent;border-radius:10px;margin-bottom:4px}.nav button.active,.nav button:hover{background:#eaf1ff;color:var(--primary);font-weight:700}.content{padding:22px;max-width:1500px;width:100%;margin:auto}.grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.stat,.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}.stat .n{font-size:28px;font-weight:800;margin-top:5px}.two{grid-template-columns:1.3fr .7fr}.three{grid-template-columns:repeat(3,1fr)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0}.toolbar input{flex:1;min-width:180px;padding:10px;border:1px solid var(--border);border-radius:10px}
+.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:700px}.table th,.table td{padding:11px;border-bottom:1px solid var(--border);text-align:left;font-size:13px;vertical-align:top}.table th{background:#f8fafc}.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700;background:#eef2f7}.green{background:#dcfce7;color:#166534}.yellow{background:#fef3c7;color:#92400e}.red{background:#fee2e2;color:#991b1b}.blue{background:#dbeafe;color:#1e40af}
+.student-card{display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:14px;background:#fff}.avatar{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:#eaf1ff;color:var(--primary);font-weight:800;flex:none;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover}
+.timeline{position:relative;margin:10px 0 0 10px;padding-left:25px;border-left:2px solid #dbe3ef}.timeline-item{position:relative;padding:0 0 20px}.timeline-item:before{content:"";position:absolute;left:-32px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--primary);border:3px solid #fff;box-shadow:0 0 0 2px #cbd5e1}
+.modal{position:fixed;inset:0;background:#0008;display:none;place-items:center;padding:15px;z-index:50}.modal.show{display:grid}.modal-box{width:min(720px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:20px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.full{grid-column:1/-1}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}
+.toast{position:fixed;right:18px;bottom:18px;background:#172033;color:#fff;padding:12px 15px;border-radius:10px;z-index:100;display:none}.toast.show{display:block}
+.mobile-nav{display:none}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px}
+.empty{text-align:center;padding:35px;color:var(--muted)}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);z-index:30;justify-content:space-around;padding:7px}.mobile-nav button{background:transparent;font-size:11px;padding:6px}.content{padding:15px 15px 80px}.stats{grid-template-columns:repeat(2,1fr)}.two,.three{grid-template-columns:1fr}.header{height:58px}.form-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.stats{grid-template-columns:1fr 1fr}.stat{padding:13px}.stat .n{font-size:22px}.content{padding:12px 10px 80px}.login-card{padding:22px}}
+</style>
+</head>
+<body>
+<div id="loginPage" class="login">
+  <div class="login-card">
+    <div class="logo">👥</div>
+    <h1>Wali Siswa</h1>
+    <div class="muted">Pemantauan perkembangan siswa kelas 7–9</div>
+    <div class="tabs">
+      <button id="tabWali" class="active" onclick="setRole('WALI')">👨‍🏫 Guru Wali</button>
+      <button id="tabSiswa" onclick="setRole('SISWA')">👨‍🎓 Siswa</button>
+    </div>
+    <div id="waliLogin">
+      <div class="field"><label>Username</label><input id="username" autocomplete="username" placeholder="Username wali"></div>
+      <div class="field"><label>PIN</label><input id="pin" type="password" inputmode="numeric" placeholder="PIN"></div>
+    </div>
+    <div id="siswaLogin" class="hidden">
+      <div class="field"><label>NISN</label><input id="nisn" inputmode="numeric" placeholder="Masukkan NISN"></div>
+      <div class="muted">Login siswa menggunakan NISN sesuai data sekolah.</div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="login()">Masuk</button>
+    <div id="loginError" class="muted" style="color:#b91c1c;margin-top:12px"></div>
+  </div>
+</div>
+
+<div id="app" class="app hidden">
+  <header class="header">
+    <div class="brand">📘 WALI SISWA</div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span id="userName" class="muted"></span>
+      <button class="btn btn-light" onclick="logout()">Keluar</button>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="nav" id="waliNav">
+        <button data-page="dashboard" onclick="showPage('dashboard')">🏠 Dashboard</button>
+        <button data-page="students" onclick="showPage('students')">👥 Data Siswa</button>
+        <button data-page="followup" onclick="showPage('followup')">📌 Follow Up</button>
+      </div>
+      <div class="nav hidden" id="studentNav">
+        <button data-page="studentHome" onclick="showPage('studentHome')">🏠 Beranda</button>
+        <button data-page="studentTimeline" onclick="showPage('studentTimeline')">📖 Perjalanan Saya</button>
+        <button data-page="studentMessages" onclick="showPage('studentMessages')">💬 Pesan Wali</button>
+      </div>
+    </aside>
+    <main id="content" class="content"></main>
+  </div>
+  <nav class="mobile-nav" id="mobileNav"></nav>
+</div>
+
+<div id="modal" class="modal"><div id="modalBox" class="modal-box"></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbxTZZxRMS4GbN_tca3kEn1hibajLsuqPdsIkVLF-lh9aqO3dDTy8oyJb6HDaZhfxhFfvQ/exec
+';
+const state = {token:localStorage.getItem('waliSiswaToken')||'',role:localStorage.getItem('waliSiswaRole')||'',user:null,students:[],selected:null};
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function fmtDate(v){if(!v)return '-'; const d=new Date(v); return isNaN(d)?esc(v):d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500)}
+function setRole(role){
+  document.getElementById('tabWali').classList.toggle('active',role==='WALI');
+  document.getElementById('tabSiswa').classList.toggle('active',role==='SISWA');
+  document.getElementById('waliLogin').classList.toggle('hidden',role!=='WALI');
+  document.getElementById('siswaLogin').classList.toggle('hidden',role!=='SISWA');
+}
+async function api(action,data={}){
+  if(API_URL.includes('PASTE_URL')) throw new Error('Isi API_URL terlebih dahulu.');
+  const payload={action,...data};
+  if(state.token) payload.token=state.token;
+  const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+  const json=await res.json();
+  if(!json.ok) throw new Error(json.error||'Terjadi kesalahan.');
+  return json;
+}
+async function login(){
+  const role=document.getElementById('tabWali').classList.contains('active')?'WALI':'SISWA';
+  document.getElementById('loginError').textContent='';
+  try{
+    const data=role==='WALI'
+      ? await api('login',{role,username:document.getElementById('username').value,pin:document.getElementById('pin').value})
+      : await api('login',{role,nisn:document.getElementById('nisn').value});
+    state.token=data.token;state.role=data.role;state.user=data.user;
+    localStorage.setItem('waliSiswaToken',state.token);localStorage.setItem('waliSiswaRole',state.role);
+    enterApp();
+  }catch(e){document.getElementById('loginError').textContent=e.message}
+}
+function enterApp(){
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('userName').textContent=state.user?.NAMA||'';
+  const wali=state.role==='WALI';
+  document.getElementById('waliNav').classList.toggle('hidden',!wali);
+  document.getElementById('studentNav').classList.toggle('hidden',wali);
+  document.getElementById('mobileNav').innerHTML=wali
+    ? '<button onclick="showPage(\\'dashboard\\')">🏠<br>Home</button><button onclick="showPage(\\'students\\')">👥<br>Siswa</button><button onclick="showPage(\\'followup\\')">📌<br>Follow Up</button>'
+    : '<button onclick="showPage(\\'studentHome\\')">🏠<br>Home</button><button onclick="showPage(\\'studentTimeline\\')">📖<br>Perjalanan</button><button onclick="showPage(\\'studentMessages\\')">💬<br>Pesan</button>';
+  showPage(wali?'dashboard':'studentHome');
+}
+async function logout(){
+  try{if(state.token)await api('logout')}catch(_){}
+  localStorage.removeItem('waliSiswaToken');localStorage.removeItem('waliSiswaRole');
+  state.token='';state.role='';state.user=null;
+  document.getElementById('app').classList.add('hidden');document.getElementById('loginPage').classList.remove('hidden');
+}
+async function showPage(page){
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  const c=document.getElementById('content');
+  c.innerHTML='<div class="card">Memuat...</div>';
+  try{
+    if(page==='dashboard')return renderDashboard();
+    if(page==='students')return renderStudents();
+    if(page==='followup')return renderFollowups();
+    if(page==='studentHome')return renderStudentHome();
+    if(page==='studentTimeline')return renderStudentTimeline();
+    if(page==='studentMessages')return renderStudentMessages();
+  }catch(e){if(/sesi|session/i.test(e.message))return logout(); c.innerHTML='<div class="card" style="color:#b91c1c">'+esc(e.message)+'</div>'}
+}
+async function renderDashboard(){
+  const d=(await api('dashboard')).data;
+  document.getElementById('content').innerHTML=`
+  <div class="section-title"><div><h2>Dashboard</h2><div class="muted">Ringkasan pemantauan siswa</div></div></div>
+  <div class="grid stats">
+    <div class="stat">👥<div class="muted">Siswa Aktif</div><div class="n">${d.totalStudents}</div></div>
+    <div class="stat">📝<div class="muted">Catatan Bulan Ini</div><div class="n">${d.notesThisMonth}</div></div>
+    <div class="stat">⚠️<div class="muted">Perlu Perhatian</div><div class="n">${d.needAttention}</div></div>
+    <div class="stat">📌<div class="muted">Follow Up</div><div class="n">${d.pendingFollowups}</div></div>
+  </div>
+  <div class="grid two" style="margin-top:14px">
+    <div class="card"><div class="section-title"><h3>Fitur utama</h3></div>
+      <p class="muted">Pilih Data Siswa untuk membuka profil, timeline, catatan konsultasi, perkembangan, target, dan tindak lanjut.</p>
+      <button class="btn btn-primary" onclick="showPage('students')">Buka Data Siswa</button>
+    </div>
+    <div class="card"><h3>Target aktif</h3><div style="font-size:30px;font-weight:800">${d.pendingTargets}</div><div class="muted">target yang masih berjalan</div></div>
+  </div>`;
+}
+async function renderStudents(){
+  const data=(await api('students')).data;state.students=data;
+  document.getElementById('content').innerHTML=`
+    <div class="section-title"><div><h2>Data Siswa</h2><div class="muted">${data.length} siswa</div></div><button class="btn btn-primary" onclick="studentForm()">+ Siswa</button></div>
+    <div class="toolbar"><input id="searchStudent" placeholder="Cari nama / NISN / NIS..." oninput="filterStudents()"></div>
+    <div id="studentList" class="grid three"></div>`;
+  paintStudents(data);
+}
+function filterStudents(){const q=document.getElementById('searchStudent').value.toLowerCase();paintStudents(state.students.filter(s=>String(s.NAMA).toLowerCase().includes(q)||String(s.NISN).includes(q)||String(s.NIS).includes(q)))}
+function paintStudents(data){
+  const el=document.getElementById('studentList');
+  if(!data.length){el.innerHTML='<div class="card empty">Data siswa tidak ditemukan.</div>';return}
+  el.innerHTML=data.map(s=>`<div class="student-card" onclick="openStudent('${esc(s.SISWA_ID)}')" style="cursor:pointer">
+    <div class="avatar">${s.FOTO_URL?`<img src="${esc(s.FOTO_URL)}">`:esc(String(s.NAMA||'?').charAt(0))}</div>
+    <div style="min-width:0"><b>${esc(s.NAMA)}</b><div class="muted">${esc(s.NISN)} · ${esc(s.JK||'')}</div><div><span class="badge blue">${esc(s.STATUS||'AKTIF')}</span></div></div>
+  </div>`).join('');
+}
+async function openStudent(id){
+  const d=(await api('studentProfile',{siswaId:id})).data;state.selected=d;
+  document.getElementById('content').innerHTML=`
+  <div class="section-title"><div><button class="btn btn-light" onclick="showPage('students')">← Kembali</button></div>
+    <div style="text-align:right"><button class="btn btn-primary" onclick="noteForm()">+ Catatan</button> <button class="btn btn-light" onclick="developmentForm()">📈 Perkembangan</button></div></div>
+  <div class="card">
+    <div style="display:flex;gap:15px;align-items:center"><div class="avatar" style="width:68px;height:68px">${d.student.FOTO_URL?`<img src="${esc(d.student.FOTO_URL)}">`:esc(String(d.student.NAMA||'?').charAt(0))}</div>
+    <div><h2>${esc(d.student.NAMA)}</h2><div class="muted">NISN ${esc(d.student.NISN)} · ${esc(d.student.JK||'')} · ${esc(d.student.STATUS||'')}</div></div></div>
+    <hr style="border:0;border-top:1px solid var(--border);margin:15px 0">
+    <div class="grid three"><div><b>Tempat Lahir</b><div class="muted">${esc(d.student.TEMPAT_LAHIR||'-')}</div></div><div><b>Tanggal Lahir</b><div class="muted">${fmtDate(d.student.TGL_LAHIR)}</div></div><div><b>Tahun Masuk</b><div class="muted">${esc(d.student.TAHUN_MASUK||'-')}</div></div></div>
+  </div>
+  <div class="grid two" style="margin-top:14px">
+    <div class="card"><div class="section-title"><h3>📖 Riwayat Kelas 7–9</h3><button class="btn btn-light" onclick="historyForm()">+ Riwayat</button></div>${historyHtml(d.history)}</div>
+    <div class="card"><div class="section-title"><h3>💬 Pesan Wali</h3><button class="btn btn-light" onclick="messageForm()">+ Pesan</button></div>${messagesHtml(d.messages)}</div>
+  </div>
+  <div class="card" style="margin-top:14px"><div class="section-title"><h3>📝 Timeline Catatan</h3></div>${timelineHtml(d.notes,true)}</div>
+  <div class="card" style="margin-top:14px"><div class="section-title"><h3>📈 Perkembangan</h3></div>${developmentHtml(d.development)}</div>
+  <div class="card" style="margin-top:14px"><div class="section-title"><h3>🎯 Target</h3><button class="btn btn-light" onclick="targetForm()">+ Target</button></div>${targetsHtml(d.targets)}</div>`;
+}
+function historyHtml(a){if(!a.length)return '<div class="empty">Belum ada riwayat kelas.</div>';return '<div class="table-wrap"><table class="table"><tr><th>Tahun</th><th>Kelas</th><th>Rombel</th><th>Wali</th></tr>'+a.sort((x,y)=>String(x.TAHUN_AJARAN).localeCompare(String(y.TAHUN_AJARAN))).map(x=>`<tr><td>${esc(x.TAHUN_AJARAN)}</td><td>${esc(x.TINGKAT)}</td><td>${esc(x.ROMBEL)}</td><td>${esc(x.WALI_KELAS||'-')}</td></tr>`).join('')+'</table></div>'}
+function timelineHtml(a,canEdit=false){if(!a.length)return '<div class="empty">Belum ada catatan.</div>';return '<div class="timeline">'+a.map(n=>`<div class="timeline-item"><b>${fmtDate(n.TANGGAL)} · ${esc(n.JENIS)}</b><div style="margin-top:5px"><b>${esc(n.TOPIK)}</b></div><div class="muted">${esc(n.CATATAN_SISWA||n.CATATAN_INTERNAL||n.PERKEMBANGAN||'')}</div><div style="margin-top:6px"><span class="badge ${n.STATUS==='PERLU_PERHATIAN'?'yellow':n.STATUS==='TINDAK_LANJUT'?'red':'green'}">${esc(n.STATUS)}</span> <span class="badge">${esc(n.VISIBILITAS)}</span></div>${canEdit?`<button class="btn btn-light" style="margin-top:7px;padding:6px 9px" onclick="noteForm('${esc(n.CATATAN_ID)}')">Edit</button>`:''}</div>`).join('')+'</div>'}
+function developmentHtml(a){if(!a.length)return '<div class="empty">Belum ada penilaian perkembangan.</div>';return '<div class="table-wrap"><table class="table"><tr><th>Tanggal</th><th>Tingkat</th><th>Akademik</th><th>Disiplin</th><th>Tanggung Jawab</th><th>Sosial</th><th>Kemandirian</th><th>Keaktifan</th></tr>'+a.map(x=>`<tr><td>${fmtDate(x.TANGGAL)}</td><td>${esc(x.TINGKAT)}</td><td>${esc(x.AKADEMIK)}</td><td>${esc(x.DISIPLIN)}</td><td>${esc(x.TANGGUNG_JAWAB)}</td><td>${esc(x.SOSIAL)}</td><td>${esc(x.KEMANDIRIAN)}</td><td>${esc(x.KEAKTIFAN)}</td></tr>`).join('')+'</table></div>'}
+function targetsHtml(a){if(!a.length)return '<div class="empty">Belum ada target.</div>';return a.map(x=>`<div style="padding:12px 0;border-bottom:1px solid var(--border)"><b>${esc(x.TARGET)}</b><div class="muted">${esc(x.INDIKATOR||'')} · batas ${fmtDate(x.BATAS_WAKTU)}</div><span class="badge ${x.STATUS==='SELESAI'?'green':'yellow'}">${esc(x.STATUS)}</span></div>`).join('')}
+function messagesHtml(a){if(!a.length)return '<div class="empty">Belum ada pesan.</div>';return a.slice(0,5).map(x=>`<div style="padding:10px 0;border-bottom:1px solid var(--border)"><b>${esc(x.JUDUL)}</b><div class="muted">${fmtDate(x.TANGGAL)}</div><div style="font-size:13px">${esc(x.PESAN)}</div></div>`).join('')}
+function openModal(title,body){document.getElementById('modalBox').innerHTML=`<h3>${title}</h3>${body}`;document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function studentForm(){
+  openModal('Tambah Siswa',`<div class="form-grid">
+  ${field('nisn','NISN')} ${field('nis','NIS')} ${field('nama','Nama Lengkap')} ${field('jk','Jenis Kelamin','select',['L','P'])}
+  ${field('tempatLahir','Tempat Lahir')} ${field('tglLahir','Tanggal Lahir','date')} ${field('alamat','Alamat','textarea','', 'full')}
+  ${field('namaAyah','Nama Ayah')} ${field('namaIbu','Nama Ibu')} ${field('noHpOrangTua','No. HP Orang Tua')}
+  ${field('tahunMasuk','Tahun Masuk')} ${field('fotoUrl','URL Foto')}
+  </div><div class="actions"><button class="btn btn-light" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveStudent()">Simpan</button></div>`);
+}
+function field(id,label,type='text',opts='',cls=''){
+  if(type==='select')return `<div class="field ${cls}"><label>${label}</label><select id="f_${id}"><option value="">Pilih</option>${opts.map(x=>`<option>${x}</option>`).join('')}</select></div>`;
+  return `<div class="field ${cls}"><label>${label}</label>${type==='textarea'?`<textarea id="f_${id}"></textarea>`:`<input id="f_${id}" type="${type}" ${opts==='full'?'':''}>`}</div>`;
+}
+function val(id){return document.getElementById('f_'+id)?.value||''}
+async function saveStudent(){
+  try{const r=await api('saveStudent',{nisn:val('nisn'),nis:val('nis'),nama:val('nama'),jk:val('jk'),tempatLahir:val('tempatLahir'),tglLahir:val('tglLahir'),alamat:val('alamat'),namaAyah:val('namaAyah'),namaIbu:val('namaIbu'),noHpOrangTua:val('noHpOrangTua'),tahunMasuk:val('tahunMasuk'),fotoUrl:val('fotoUrl')});closeModal();toast('Siswa tersimpan');showPage('students')}catch(e){toast(e.message)}}
+function noteForm(id=''){
+  const old=id?state.selected.notes.find(x=>String(x.CATATAN_ID)===String(id)):null;
+  openModal(old?'Edit Catatan':'Tambah Catatan',`<div class="form-grid">
+  ${field('tanggal','Tanggal','date')} ${field('jenis','Jenis','select',['AKADEMIK','KEDISIPLINAN','SOSIAL','PRIBADI','KARAKTER','ORGANISASI','KARIER','LAINNYA'])}
+  ${field('topik','Topik')} ${field('status','Status','select',['NORMAL','PERLU_PERHATIAN','TINDAK_LANJUT','SELESAI'])}
+  ${field('catatanInternal','Catatan Internal','textarea','', 'full')}
+  ${field('catatanSiswa','Catatan untuk Siswa','textarea','', 'full')}
+  ${field('perkembangan','Perkembangan','textarea','', 'full')}
+  ${field('tindakLanjut','Tindak Lanjut','textarea','', 'full')}
+  ${field('visibilitas','Visibilitas','select',['INTERNAL','SISWA'])}
+  </div><div class="actions"><button class="btn btn-light" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveNote('${id}')">Simpan</button></div>`);
+  if(old){['tanggal','jenis','topik','status','catatanInternal','catatanSiswa','perkembangan','tindakLanjut','visibilitas'].forEach(k=>{const el=document.getElementById('f_'+k);if(el)el.value=old[k==='catatanInternal'?'CATATAN_INTERNAL':k==='catatanSiswa'?'CATATAN_SISWA':k==='tindakLanjut'?'TINDAK_LANJUT':k.toUpperCase()]||''})}
+  else document.getElementById('f_tanggal').value=new Date().toISOString().slice(0,10);
+}
+async function saveNote(id){
+  try{
+    const data={siswaId:state.selected.student.SISWA_ID,tanggal:val('tanggal'),jenis:val('jenis'),topik:val('topik'),status:val('status'),catatanInternal:val('catatanInternal'),catatanSiswa:val('catatanSiswa'),perkembangan:val('perkembangan'),tindakLanjut:val('tindakLanjut'),visibilitas:val('visibilitas')};
+    await api(id?'updateNote':'addNote',id?{...data,catatanId:id}:data);closeModal();toast('Catatan tersimpan');openStudent(state.selected.student.SISWA_ID);
+  }catch(e){toast(e.message)}
+}
+function developmentForm(){
+  openModal('Tambah Perkembangan',`<div class="form-grid">${field('tanggal','Tanggal','date')}${field('tingkat','Tingkat','select',['7','8','9'])}
+  ${field('akademik','Akademik','select',['1','2','3','4'])}${field('disiplin','Disiplin','select',['1','2','3','4'])}
+  ${field('tanggungJawab','Tanggung Jawab','select',['1','2','3','4'])}${field('sosial','Sosial','select',['1','2','3','4'])}
+  ${field('kemandirian','Kemandirian','select',['1','2','3','4'])}${field('keaktifan','Keaktifan','select',['1','2','3','4'])}
+  ${field('catatan','Catatan','textarea','', 'full')}</div><div class="actions"><button class="btn btn-light" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveDevelopment()">Simpan</button></div>`);
+  document.getElementById('f_tanggal').value=new Date().toISOString().slice(0,10);
+  document.getElementById('f_tingkat').value='9';
+}
+async function saveDevelopment(){
+  try{await api('addDevelopment',{siswaId:state.selected.student.SISWA_ID,tanggal:val('tanggal'),tingkat:val('tingkat'),akademik:val('akademik'),disiplin:val('disiplin'),tanggungJawab:val('tanggungJawab'),sosial:val('sosial'),kemandirian:val('kemandirian'),keaktifan:val('keaktifan'),catatan:val('catatan')});closeModal();toast('Perkembangan tersimpan');openStudent(state.selected.student.SISWA_ID)}catch(e){toast(e.message)}}
+function targetForm(){
+  openModal('Tambah Target',`<div class="form-grid">${field('tanggal','Tanggal','date')}${field('batasWaktu','Batas Waktu','date')}${field('target','Target','text','','full')}${field('indikator','Indikator Keberhasilan','textarea','', 'full')}${field('tindakLanjut','Tindak Lanjut','textarea','', 'full')}</div><div class="actions"><button class="btn btn-light" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveTarget()">Simpan</button></div>`);
+  document.getElementById('f_tanggal').value=new Date().toISOString().slice(0,10);
+}
+async function saveTarget(){try{await api('addTarget',{siswaId:state.selected.student.SISWA_ID,tanggal:val('tanggal'),target:val('target'),indikator:val('indikator'),batasWaktu:val('batasWaktu'),tindakLanjut:val('tindakLanjut')});closeModal();toast('Target tersimpan');openStudent(state.selected.student.SISWA_ID)}catch(e){toast(e.message)}}
+function historyForm(){
+  openModal('Tambah Riwayat Kelas',`<div class="form-grid">${field('tahunAjaran','Tahun Ajaran')}${field('tingkat','Tingkat','select',['7','8','9'])}${field('rombel','Rombel')}${field('waliKelas','Wali Kelas')}</div><div class="actions"><button class="btn btn-light" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveHistory()">Simpan</button></div>`);
+}
+async function saveHistory(){try{await api('saveClassHistory',{siswaId:state.selected.student.SISWA_ID,tahunAjaran:val('tahunAjaran'),tingkat:val('tingkat'),rombel:val('rombel'),waliKelas:val('waliKelas')});closeModal();toast('Riwayat tersimpan');openStudent(state.selected.student.SISWA_ID)}catch(e){toast(e.message)}}
+function messageForm(){
+  openModal('Pesan untuk Siswa',`<div class="field"><label>Judul</label><input id="msgTitle"></div><div class="field"><label>Pesan</label><textarea id="msgText"></textarea></div><div class="actions"><button class="btn btn-light" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveMessage()">Kirim</button></div>`);
+}
+async function saveMessage(){try{await api('addMessage',{siswaId:state.selected.student.SISWA_ID,judul:document.getElementById('msgTitle').value,pesan:document.getElementById('msgText').value});closeModal();toast('Pesan dikirim');openStudent(state.selected.student.SISWA_ID)}catch(e){toast(e.message)}}
+async function renderFollowups(){
+  const students=(await api('students')).data;
+  document.getElementById('content').innerHTML='<h2>Follow Up</h2><div class="muted">Daftar tindak lanjut dikelola melalui profil masing-masing siswa.</div><div class="card" style="margin-top:14px"><div class="table-wrap"><table class="table"><tr><th>Siswa</th><th>NISN</th><th>Aksi</th></tr>'+students.map(s=>`<tr><td>${esc(s.NAMA)}</td><td>${esc(s.NISN)}</td><td><button class="btn btn-light" onclick="openStudent('${esc(s.SISWA_ID)}')">Buka Profil</button></td></tr>`).join('')+'</table></div></div>';
+}
+async function renderStudentHome(){
+  const d=(await api('studentDashboard')).data;
+  document.getElementById('content').innerHTML=`<div class="card" style="margin-bottom:14px"><div class="muted">Selamat datang,</div><h1>${esc(d.student.NAMA)}</h1><div class="muted">NISN ${esc(d.student.NISN)}</div></div>
+  <div class="grid stats"><div class="stat">📖<div class="muted">Riwayat Kelas</div><div class="n">${d.history.length}</div></div><div class="stat">📝<div class="muted">Catatan Dibagikan</div><div class="n">${d.notes.length}</div></div><div class="stat">🎯<div class="muted">Target</div><div class="n">${d.targets.length}</div></div><div class="stat">💬<div class="muted">Pesan</div><div class="n">${d.messages.length}</div></div></div>
+  <div class="grid two" style="margin-top:14px"><div class="card"><h3>📝 Catatan Terbaru</h3>${timelineHtml(d.notes)}</div><div class="card"><h3>💬 Pesan Wali</h3>${messagesHtml(d.messages)}</div></div>`;
+}
+async function renderStudentTimeline(){
+  const d=(await api('studentDashboard')).data;
+  document.getElementById('content').innerHTML=`<div class="card"><h2>📖 Perjalanan Saya</h2><div class="muted">Riwayat kelas 7 sampai 9</div>${historyHtml(d.history)}</div><div class="card" style="margin-top:14px"><h3>Timeline Catatan</h3>${timelineHtml(d.notes)}</div><div class="card" style="margin-top:14px"><h3>Perkembangan</h3>${developmentHtml(d.development)}</div><div class="card" style="margin-top:14px"><h3>Target</h3>${targetsHtml(d.targets)}</div>`;
+}
+async function renderStudentMessages(){
+  const a=(await api('myMessages')).data;
+  document.getElementById('content').innerHTML=`<div class="card"><h2>💬 Pesan Wali</h2>${messagesHtml(a)}</div>`;
+}
+window.addEventListener('DOMContentLoaded',()=>{
+  if(state.token && state.role){
+    // Token may have expired; validate by loading dashboard.
+    state.user={NAMA:''};
+    enterApp();
+  }
+  document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+});
+</script>
+</body>
+</html>
