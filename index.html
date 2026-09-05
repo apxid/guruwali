@@ -116,17 +116,38 @@ function currentRole(){return document.querySelector('.role.active').dataset.rol
 function toggleEye(){ $('credential').type=$('credential').type==='password'?'text':'password' }
 function saveSession(){
   const key='waliSiswaSession';
-  const store=$('remember').checked?localStorage:sessionStorage;
-  store.setItem(key,JSON.stringify({token:state.token,role:state.role,user:state.user}));
+  const data=JSON.stringify({token:state.token,role:state.role,user:state.user});
+  try{
+    const remember=$('remember').checked;
+    if(remember){
+      localStorage.setItem(key,data);
+      sessionStorage.removeItem(key);
+    }else{
+      sessionStorage.setItem(key,data);
+      localStorage.removeItem(key);
+    }
+  }catch(e){
+    // Jika storage browser dibatasi, coba storage yang paling umum.
+    try{localStorage.setItem(key,data)}catch(ignore){}
+  }
 }
 function loadSession(){
+  const key='waliSiswaSession';
   for(const store of [localStorage,sessionStorage]){
-    const raw=store.getItem('waliSiswaSession');
-    if(raw){try{return JSON.parse(raw)}catch(e){}}
+    try{
+      const raw=store.getItem(key);
+      if(raw){
+        const parsed=JSON.parse(raw);
+        if(parsed && parsed.token && parsed.role) return parsed;
+      }
+    }catch(e){}
   }
   return null;
 }
-function clearSession(){localStorage.removeItem('waliSiswaSession');sessionStorage.removeItem('waliSiswaSession')}
+function clearSession(){
+  try{localStorage.removeItem('waliSiswaSession')}catch(e){}
+  try{sessionStorage.removeItem('waliSiswaSession')}catch(e){}
+}
 async function api(action,data={}){
   if(API_URL.includes('PASTE_URL')) throw new Error('API_URL belum diisi pada index.html.');
   const res=await fetch(API_URL,{method:'POST',body:JSON.stringify(Object.assign({action},data))});
@@ -149,17 +170,34 @@ async function login(){
 async function tryAutoLogin(){
   const s=loadSession();
   if(!s || !s.token || !s.role) return;
+
+  // Pulihkan state dari browser terlebih dahulu.
   state=Object.assign({section:'home',students:[],selected:null},s);
+
   try{
     const r=await api('validateSession',{token:s.token});
-    if(!r.valid) throw new Error('Sesi tidak valid.');
+
+    // HANYA hapus storage jika server benar-benar menyatakan token tidak valid.
+    if(!r.valid){
+      clearSession();
+      state={token:null,role:null,user:null,section:'home',students:[],selected:null};
+      return;
+    }
+
     if(r.user) state.user=Object.assign({},state.user||{},r.user);
     state.role=r.role||state.role;
+
+    // Simpan kembali state yang sudah tervalidasi agar tetap ada setelah reload.
+    saveSession();
+
     showApp();
     await render();
   }catch(e){
-    clearSession();
-    state={token:null,role:null,user:null,section:'home',students:[],selected:null};
+    // Gangguan jaringan/API tidak boleh dianggap sebagai logout.
+    // Token tetap disimpan sehingga dapat dicoba lagi tanpa login ulang.
+    console.warn('Validasi sesi gagal sementara:',e);
+    showApp();
+    $('content').innerHTML='<div class="card empty">Sesi tersimpan, tetapi server belum dapat dihubungi. Silakan <button class="btn btn-light" onclick="tryAutoLogin()">coba lagi</button>.</div>';
   }
 }
 function showApp(){$('loginScreen').classList.add('hidden');$('app').classList.remove('hidden');$('headerUser').textContent=(state.user?.NAMA||'').toString()}
