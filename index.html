@@ -171,37 +171,44 @@ async function tryAutoLogin(){
   const s=loadSession();
   if(!s || !s.token || !s.role) return;
 
-  // Pulihkan state dari browser terlebih dahulu.
+  // Pulihkan sesi lokal TERLEBIH DAHULU.
+  // Reload tidak boleh mengeluarkan pengguna dari aplikasi.
   state=Object.assign({section:'home',students:[],selected:null},s);
+  showApp();
 
+  // Validasi ke server dilakukan di belakang layar.
+  // Jika server sedang lambat/tidak dapat dihubungi, sesi lokal TETAP dipertahankan.
   try{
     const r=await api('validateSession',{token:s.token});
 
-    // HANYA hapus storage jika server benar-benar menyatakan token tidak valid.
-    if(!r.valid){
-      clearSession();
-      state={token:null,role:null,user:null,section:'home',students:[],selected:null};
-      return;
+    if(r.valid){
+      if(r.user) state.user=Object.assign({},state.user||{},r.user);
+      state.role=r.role||state.role;
+      saveSession();
+    } else {
+      // PENTING: jangan clearSession() pada reload.
+      // Sesi hanya dihapus melalui tombol KELUAR.
+      console.warn('Server tidak mengenali token sesi, tetapi sesi lokal dipertahankan.');
     }
+  }catch(e){
+    console.warn('Validasi sesi gagal sementara. Sesi lokal tetap dipertahankan.',e);
+  }
 
-    if(r.user) state.user=Object.assign({},state.user||{},r.user);
-    state.role=r.role||state.role;
-
-    // Simpan kembali state yang sudah tervalidasi agar tetap ada setelah reload.
-    saveSession();
-
-    showApp();
+  // Tetap render aplikasi berdasarkan sesi yang tersimpan.
+  try{
     await render();
   }catch(e){
-    // Gangguan jaringan/API tidak boleh dianggap sebagai logout.
-    // Token tetap disimpan sehingga dapat dicoba lagi tanpa login ulang.
-    console.warn('Validasi sesi gagal sementara:',e);
-    showApp();
-    $('content').innerHTML='<div class="card empty">Sesi tersimpan, tetapi server belum dapat dihubungi. Silakan <button class="btn btn-light" onclick="tryAutoLogin()">coba lagi</button>.</div>';
+    console.warn('Render setelah pemulihan sesi gagal:',e);
   }
 }
 function showApp(){$('loginScreen').classList.add('hidden');$('app').classList.remove('hidden');$('headerUser').textContent=(state.user?.NAMA||'').toString()}
-function logout(){clearSession();location.reload()}
+async function logout(){
+  const token=state.token;
+  try{ if(token) await api('logout',{token}); }catch(e){ console.warn('Logout server gagal:',e); }
+  clearSession();
+  state={token:null,role:null,user:null,section:'home',students:[],selected:null};
+  location.reload();
+}
 function navItems(){
   if(state.role==='WALI') return [
     ['home','🏠','Dashboard'],['students','👥','Data Siswa'],['timeline','🕘','Riwayat 7–9'],['notes','📝','Catatan'],['targets','🎯','Target']
